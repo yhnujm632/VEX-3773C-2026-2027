@@ -126,10 +126,3 @@ Feel free to open Issues or submit Pull Requests!
 - [ ] Polish documentation styling
 - [ ] Usability testing and improvements
 
----
-
-
-## Contact
-
-Have questions? Ideas?  
-Open an issue or email: **derek.m.baier@gmail.com**
