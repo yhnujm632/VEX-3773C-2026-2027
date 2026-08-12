@@ -1,11 +1,8 @@
 from vex import DigitalOut
 
-class MatchLoadHelper:
+class PistonActuator:
     """
-    A subsystem class that controls a pneumatic piston for a VEX robot’s match loader mechanism.
-
-    The Match Load Helper manages the piston responsible for assisting with  removing
-    game elements from the match-load towers during a match.
+    A subsystem class that controls a pneumatic piston for the mid-goal hood actuator.
 
     Attributes:
         piston (DigitalOut): A digital output object controlling the pneumatic solenoid.
@@ -19,6 +16,7 @@ class MatchLoadHelper:
             piston (DigitalOut): The digital output that activates the pneumatic piston.
         """
         self.piston = piston
+        self._state = False
 
     def extend(self):
         """
@@ -27,7 +25,8 @@ class MatchLoadHelper:
         This method sends a high (True) signal to the digital output,
         opening the pneumatic valve and extending the piston.
         """
-        self.piston.set(True)
+        self._state = True
+        self.piston.set(self._state)
 
     def retract(self):
         """
@@ -36,4 +35,15 @@ class MatchLoadHelper:
         This method sends a low (False) signal to the digital output,
         closing the pneumatic valve and retracting the piston.
         """
-        self.piston.set(False)
+        self._state = False
+        self.piston.set(self._state)
+
+    def toggle(self):
+        """
+        Toggles the state of the piston between extended and retracted.
+
+        This method switches the current state of the piston and updates
+        the digital output accordingly.
+        """
+        self._state = not self._state
+        self.piston.set(self._state)

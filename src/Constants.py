@@ -21,7 +21,7 @@ class PIDFGains(PIDGains):
 
 
 class DefaultPreferences:
-    CONTROL_STYLE = ControlStyles.TANK
+    CONTROL_STYLE = ControlStyles.SPLIT_ARCADE
     CUBIC_FILTER_LINEARITY = 1.0
     MOVE_SPEED = 1.0
     TURN_SPEED = 1.0
@@ -36,7 +36,7 @@ class DefaultPreferences:
     INPUT_DEBUG_MODE = False
 
 
-class ColtonPreferences(DefaultPreferences):
+class RossPreferences(DefaultPreferences):
     CONTROL_STYLE = ControlStyles.SPLIT_ARCADE
     CUBIC_FILTER_LINEARITY = 1
     USE_PIDF_CONTROL = True
@@ -73,7 +73,7 @@ class CompetitionSmartPorts:
 class ThreeWirePorts:
     brain = Brain()
     RAISE_SOLENOID = brain.three_wire_port.g
-    MATCH_LOAD_HELPER_SOLENOID = brain.three_wire_port.b
+    PISTON_ACTUATOR_SOLENOID = brain.three_wire_port.b
     DESCORING_ARM_SOLENOID_UP = brain.three_wire_port.h
     DESCORING_ARM_SOLENOID_OUT = brain.three_wire_port.a
     HOOD_SOLENOID = brain.three_wire_port.c

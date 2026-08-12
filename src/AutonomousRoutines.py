@@ -6,7 +6,7 @@ from VEXLib.Util.Logging import Logger
 from VEXLib.Geometry.Rotation2d import Rotation2d
 from VEXLib.Geometry.Translation1d import Translation1d
 from VEXLib.Geometry.Velocity1d import Velocity1d
-from TankDrivetrainOld import TimeBasedCommand
+from TankDrivetrain import TimeBasedCommand
 import VEXLib.Util.time as time
 from Constants import IntakeConstants
 from vex import Color, Thread, DEGREES

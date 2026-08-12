@@ -1,3 +1,5 @@
+from ssl import PROTOCOL_SSLv23
+
 from VEXLib.Geometry.Translation2d import Translation2d
 from VEXLib.Util.time import wait_until_not, time
 from VEXLib.Util.Logging import Logger, NoLogger
@@ -23,9 +25,8 @@ import math
 import sys
 
 import VEXLib.Math.MathUtil as MathUtil
-from MatchLoadHelperOld import MatchLoadHelper
 from VEXLib.Geometry.GeometryUtil import hypotenuse
-from TankDrivetrainOld import Drivetrain
+from TankDrivetrain import Drivetrain
 from VEXLib.Motor import Motor
 from VEXLib.Robot.RobotBase import RobotBase
 from VEXLib.Robot.ScrollingScreen import ScrollingScreen
@@ -108,10 +109,6 @@ class Robot(RobotBase):
             Optical(SmartPorts.OPTICAL_SENSOR)
         )
 
-        self.match_load_helper = MatchLoadHelper(
-            DigitalOut(ThreeWirePorts.MATCH_LOAD_HELPER_SOLENOID)
-        )
-
         self.descoring_arm = DescoringArm(
             DigitalOut(ThreeWirePorts.DESCORING_ARM_SOLENOID_OUT),
             DigitalOut(ThreeWirePorts.DESCORING_ARM_SOLENOID_UP)
@@ -185,8 +182,8 @@ class Robot(RobotBase):
 
         self.align_robot()
 
-        if drive_style == "Colton":
-            self.user_preferences = ColtonPreferences
+        if drive_style == "Ross":
+            self.user_preferences = RossPreferences
             self.setup_default_bindings()
         elif drive_style == "Debug":
             self.user_preferences = DebugPreferences
@@ -370,47 +367,11 @@ class Robot(RobotBase):
             self.brain.screen.set_pen_color(Color.GREEN)
             self.brain.screen.draw_pixel(left_stick_x_processed * 100 + 360, -left_stick_y_processed * 100 + 120)
 
-        self.ensure_match_loader_in_size()
-
-        # self.intake.periodic()
-
-    def ensure_match_loader_in_size(self):
-        if (not self.intake.raise_piston.value()) and self.match_load_helper.piston.value():
-            self.match_load_helper.retract()
-            robot_log.warn("Retracting match load helper because intake is down")
-            self.controller.rumble("..")
 
     @robot_log.logged
     def setup_default_bindings(self):
         robot_log.info("Setting up default controller bindings")
 
-        self.controller.buttonR1.pressed(lambda: (self.intake.run_floating_intake(1.0)))
-        self.controller.buttonR1.released(self.intake.stop_floating_intake)
-
-        self.controller.buttonR2.pressed(lambda: (self.intake.run_floating_intake(-1.0)))
-        self.controller.buttonR2.released(self.intake.stop_floating_intake)
-
-        self.controller.buttonLeft.pressed(self.match_load_helper.extend)
-        self.controller.buttonLeft.released(self.match_load_helper.retract)
-
-        self.controller.buttonY.pressed(self.intake.toggle_intake_piston)
-        #
-        # self.controller.buttonA.pressed(self.descoring_arm.next_state)
-        # self.controller.buttonDown.pressed(self.descoring_arm.previous_state)
-
-        self.controller.buttonB.pressed(self.descoring_arm.toggle_up)
-        self.controller.buttonA.pressed(self.descoring_arm.toggle_stow)
-
-        # self.controller.buttonL1.pressed(self.intake.step_up)
-        # self.controller.buttonL2.pressed(lambda: (self.intake.set_lever_setpoint(120)))
-
-
-        self.controller.buttonL1.pressed( lambda:  (self.intake.set_lever_velocity(100), self.intake.extend_flap(), self.intake.run_floating_intake(1.0)))
-        self.controller.buttonL1.released( lambda:( self.intake.move_lever_to_position(0), self.intake.retract_flap(), self.intake.stop_floating_intake()) if not self.controller.buttonL2.pressing() else pass_function())
-        self.controller.buttonL2.pressed(lambda: ( self.intake.set_lever_velocity(35), self.intake.extend_flap(), self.intake.run_floating_intake(1.0)))
-        self.controller.buttonL2.released(  lambda: (self.intake.move_lever_to_position(0), self.intake.retract_flap(), self.intake.stop_floating_intake()) if not self.controller.buttonL1.pressing() else pass_function())
-
-        self.controller.buttonDown.released(lambda: (time.sleep_ms(5), self.brain.screen.clear_screen))
 
     @robot_log.logged
     def setup_debug_bindings(self):
