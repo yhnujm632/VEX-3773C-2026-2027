@@ -173,7 +173,6 @@ class Drivetrain:
         self.set_powers(left_controller_output, right_controller_output)
 
     def update_drivetrain_velocities(self):
-        #TODO: Clean up this logic
         if self.left_drivetrain_speed_calculator.ready_for_sample(
                 time.time()
         ):

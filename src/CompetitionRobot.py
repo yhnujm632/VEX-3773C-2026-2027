@@ -1,4 +1,4 @@
-from ssl import PROTOCOL_SSLv23
+# from ssl import PROTOCOL_SSLv23
 
 from VEXLib.Geometry.Translation2d import Translation2d
 from VEXLib.Util.time import wait_until_not, time
@@ -65,7 +65,9 @@ class Robot(RobotBase):
         self.drivetrain = Drivetrain(
             [
                 Motor(
-                    SmartPorts.FRONT_LEFT_DRIVETRAIN_MOTOR, GearRatios.DRIVETRAIN, True
+                    SmartPorts.FRONT_LEFT_DRIVETRAIN_MOTOR,
+                    GearRatios.DRIVETRAIN,
+                    True
                 ),
                 Motor(
                     SmartPorts.REAR_LOWER_LEFT_DRIVETRAIN_MOTOR,
@@ -161,7 +163,7 @@ class Robot(RobotBase):
         robot_log.trace(
             "Available autonomous routines:", self.available_autonomous_routines
         )
-        selected_auto, drive_style, alliance_color = self.controller.get_multiple_selections([[auto.name for auto in self.available_autonomous_routines], ["Colton", "Debug"], ["red", "blue"]])
+        selected_auto, drive_style, alliance_color = self.controller.get_multiple_selections([[auto.name for auto in self.available_autonomous_routines], ["Ross", "Debug"], ["red", "blue"]])
         if alliance_color == "blue":
             self.alliance_color = Color.BLUE
         else:

@@ -52,23 +52,23 @@ class DebugPreferences(DefaultPreferences):
 class CompetitionSmartPorts:
     """Drivetrain"""
 
-    FRONT_LEFT_DRIVETRAIN_MOTOR = Ports.PORT10
-    REAR_LOWER_LEFT_DRIVETRAIN_MOTOR = Ports.PORT5
-    REAR_UPPER_LEFT_DRIVETRAIN_MOTOR = Ports.PORT14
+    FRONT_LEFT_DRIVETRAIN_MOTOR = Ports.PORT0
+    REAR_LOWER_LEFT_DRIVETRAIN_MOTOR = Ports.PORT0
+    REAR_UPPER_LEFT_DRIVETRAIN_MOTOR = Ports.PORT0
 
-    FRONT_RIGHT_DRIVETRAIN_MOTOR = Ports.PORT15
-    REAR_LOWER_RIGHT_DRIVETRAIN_MOTOR = Ports.PORT20
-    REAR_UPPER_RIGHT_DRIVETRAIN_MOTOR = Ports.PORT1
+    FRONT_RIGHT_DRIVETRAIN_MOTOR = Ports.PORT0
+    REAR_LOWER_RIGHT_DRIVETRAIN_MOTOR = Ports.PORT0
+    REAR_UPPER_RIGHT_DRIVETRAIN_MOTOR = Ports.PORT0
 
-    FLOATING_INTAKE_MOTOR = Ports.PORT9
-    LEVER_MOTOR = Ports.PORT21
+    FLOATING_INTAKE_MOTOR = Ports.PORT0
+    LEVER_MOTOR = Ports.PORT0
 
-    INERTIAL_SENSOR = Ports.PORT2
-    LEFT_DISTANCE = Ports.PORT8
-    RIGHT_DISTANCE = Ports.PORT11
-    VISION_SENSOR = Ports.PORT3
+    INERTIAL_SENSOR = Ports.PORT0
+    LEFT_DISTANCE = Ports.PORT0
+    RIGHT_DISTANCE = Ports.PORT0
+    VISION_SENSOR = Ports.PORT0
 
-    OPTICAL_SENSOR = Ports.PORT4
+    OPTICAL_SENSOR = Ports.PORT0
 
 class ThreeWirePorts:
     brain = Brain()
@@ -100,11 +100,11 @@ class DrivetrainProperties:
     TURNING_THRESHOLD = Rotation2d.from_degrees(1)
     MOVEMENT_DISTANCE_THRESHOLD = Distance.from_centimeters(1)
     MOVEMENT_MAX_EXTRA_TIME = 1.6
-    MAX_ACHIEVABLE_SPEED = Velocity1d.from_meters_per_second(2.205)
-    MOTOR_TO_WHEEL_GEAR_RATIO = 36 / 48
+    MAX_ACHIEVABLE_SPEED = Velocity1d.from_meters_per_second(2.205) ##TODO test
+    MOTOR_TO_WHEEL_GEAR_RATIO = 36 / 64
     WHEEL_DIAMETER = Distance.from_inches(3.233)
     WHEEL_CIRCUMFERENCE = circle_circumference(WHEEL_DIAMETER / 2)
-    TRACK_WIDTH = Distance.from_meters(0.25)
+    TRACK_WIDTH = Distance.from_millimeters(290.5) ##TODO check
 
     LONG_GOAL_COLOR_DESC = Colordesc(1, 129, 66, 35, 12, 0.2)
 
