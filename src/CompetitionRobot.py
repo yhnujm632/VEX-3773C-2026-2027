@@ -77,7 +77,7 @@ class Robot(RobotBase):
                 Motor(
                     SmartPorts.REAR_UPPER_LEFT_DRIVETRAIN_MOTOR,
                     GearRatios.DRIVETRAIN,
-                    False,
+                    True,
                 ),
             ],
             [
@@ -94,11 +94,10 @@ class Robot(RobotBase):
                 Motor(
                     SmartPorts.REAR_UPPER_RIGHT_DRIVETRAIN_MOTOR,
                     GearRatios.DRIVETRAIN,
-                    True,
+                    False,
                 ),
             ],
-            Inertial(SmartPorts.INERTIAL_SENSOR),
-            Vision(AiVision(SmartPorts.VISION_SENSOR, DrivetrainProperties.LONG_GOAL_COLOR_DESC))
+            Inertial(SmartPorts.INERTIAL_SENSOR)
         )
 
         self.calibrate_sensors()

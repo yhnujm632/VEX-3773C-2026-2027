@@ -574,4 +574,4 @@ class Square(AutonomousRoutine):
 
 
 
-all_routines = [WorldsWinPoint, Left6Long, Right6Long, Left4Long, Right4Long, Left2Mid5Long, Right4Long3Mid, Drive, GoalLineTest]
+all_routines = [Square, Drive]

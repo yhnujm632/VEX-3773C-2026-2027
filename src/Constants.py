@@ -52,23 +52,23 @@ class DebugPreferences(DefaultPreferences):
 class CompetitionSmartPorts:
     """Drivetrain"""
 
-    FRONT_LEFT_DRIVETRAIN_MOTOR = Ports.PORT0
-    REAR_LOWER_LEFT_DRIVETRAIN_MOTOR = Ports.PORT0
-    REAR_UPPER_LEFT_DRIVETRAIN_MOTOR = Ports.PORT0
+    FRONT_LEFT_DRIVETRAIN_MOTOR = Ports.PORT1
+    REAR_LOWER_LEFT_DRIVETRAIN_MOTOR = Ports.PORT11
+    REAR_UPPER_LEFT_DRIVETRAIN_MOTOR = Ports.PORT12
 
-    FRONT_RIGHT_DRIVETRAIN_MOTOR = Ports.PORT0
-    REAR_LOWER_RIGHT_DRIVETRAIN_MOTOR = Ports.PORT0
-    REAR_UPPER_RIGHT_DRIVETRAIN_MOTOR = Ports.PORT0
+    FRONT_RIGHT_DRIVETRAIN_MOTOR = Ports.PORT10
+    REAR_LOWER_RIGHT_DRIVETRAIN_MOTOR = Ports.PORT20
+    REAR_UPPER_RIGHT_DRIVETRAIN_MOTOR = Ports.PORT19
 
-    FLOATING_INTAKE_MOTOR = Ports.PORT0
-    LEVER_MOTOR = Ports.PORT0
+    FLOATING_INTAKE_MOTOR = Ports.PORT2
+    LEVER_MOTOR = Ports.PORT3
 
-    INERTIAL_SENSOR = Ports.PORT0
-    LEFT_DISTANCE = Ports.PORT0
-    RIGHT_DISTANCE = Ports.PORT0
-    VISION_SENSOR = Ports.PORT0
+    INERTIAL_SENSOR = Ports.PORT21
+    # LEFT_DISTANCE = Ports.PORT0
+    # RIGHT_DISTANCE = Ports.PORT0
+    # VISION_SENSOR = Ports.PORT0
 
-    OPTICAL_SENSOR = Ports.PORT0
+    OPTICAL_SENSOR = Ports.PORT4
 
 class ThreeWirePorts:
     brain = Brain()
@@ -94,7 +94,7 @@ class DrivetrainProperties:
     ROTATION_PID_GAINS = PIDGains(0.5, 0.0, 0.03)
 
     ROBOT_RELATIVE_TO_FIELD_RELATIVE_ROTATION = Rotation2d.from_degrees(90)
-    STARTUP_ANGLE = Rotation2d.from_degrees(180)
+    STARTUP_ANGLE = Rotation2d.from_degrees(90)
     TURN_TIMEOUT_SECONDS = 1.5
     TURN_CORRECTION_SCALAR_WHILE_MOVING = 0.5
     TURNING_THRESHOLD = Rotation2d.from_degrees(1)
@@ -104,7 +104,7 @@ class DrivetrainProperties:
     MOTOR_TO_WHEEL_GEAR_RATIO = 36 / 64
     WHEEL_DIAMETER = Distance.from_inches(3.233)
     WHEEL_CIRCUMFERENCE = circle_circumference(WHEEL_DIAMETER / 2)
-    TRACK_WIDTH = Distance.from_millimeters(290.5) ##TODO check
+    TRACK_WIDTH = Distance.from_inches(11.4)
 
     LONG_GOAL_COLOR_DESC = Colordesc(1, 129, 66, 35, 12, 0.2)
 
