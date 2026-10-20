@@ -3,4 +3,5 @@
 /.idea/misc.xml
 /src/autocomplete/
 /venv/
+/.venv/
 /logs/
