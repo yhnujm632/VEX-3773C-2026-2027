@@ -297,7 +297,7 @@ class Robot(RobotBase):
 
     @robot_log.logged
     def on_driver_control(self):
-        self.intake.stop_floating_intake()
+        self.intake.stop_intake()
         self.selected_autonomous.cleanup()
         self.flush_all_logs("Flushing logs before driver control")
         self.drivetrain.left_drivetrain_PID.pid_gains = self.user_preferences.PIDF_GAINS_LEFT_DRIVER
@@ -313,7 +313,7 @@ class Robot(RobotBase):
 
     @robot_log.logged
     def on_autonomous(self):
-        self.intake.stop_floating_intake()
+        self.intake.stop_intake()
         self.drivetrain.left_drivetrain_PID.pid_gains = self.user_preferences.PIDF_GAINS_LEFT_AUTO
         self.drivetrain.right_drivetrain_PID.pid_gains = self.user_preferences.PIDF_GAINS_RIGHT_AUTO
         self.drivetrain.odometry.pose.translation = Translation2d()

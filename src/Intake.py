@@ -6,84 +6,52 @@ from vex import DigitalOut, TorqueUnits, PERCENT, Color, Optical, Thread, FORWAR
 
 
 class Intake:
-    def __init__(self, lever_motor: Motor, floating_intake_motor: Motor, flap_piston: DigitalOut, raise_piston: DigitalOut, optical_sensor: Optical):
-        self.lever_motor = lever_motor
-        self.optical_sensor = optical_sensor
-        self.floating_intake_motor = floating_intake_motor
-        self.flap_piston = flap_piston
-        self.raise_piston = raise_piston
-        self.lever_target = 0
-        self.lever_speed = 0
+    def __init__(self, elevator_motor_1: Motor, elevator_motor_2: Motor, intake_motor: Motor):
+        self.elevator_motor_1 = elevator_motor_1
+        self.elevator_motor_2 = elevator_motor_2
+        self.intake_motor = intake_motor
+        self.elevator_target = 0
+        self.elevator_speed = 0
         self.time_updated_setpoint = 0
-        self.lever_step_amount = 20
-        self.lever_motor.spin(FORWARD)
-        self.set_lever_velocity(0)
-        self.optical_sensor.set_light(LedStateType.ON)
-        self.optical_sensor.set_light_power(100)
+        self.elevator_step_amount = 20
+        self.set_elevator_velocity(0)
 
-    def set_lever_velocity(self, velocity):
-        self.lever_motor.spin(FORWARD)
-        self.lever_motor.set_velocity(velocity)
+    def set_elevator_velocity(self, velocity):
+        self.elevator_motor_1.spin(FORWARD)
+        self.elevator_motor_2.spin(FORWARD)
+        self.elevator_motor_1.set_velocity(velocity)
+        self.elevator_motor_2.set_velocity(velocity)
 
-    def get_lever_position(self):
-        return self.lever_motor.position(DEGREES)
+    def get_elevator_position(self):
+        return (self.elevator_motor_1.position(DEGREES) + self.elevator_motor_2.position(DEGREES)) / 2
 
-    def move_lever_to_position(self, position_deg):
-        self.lever_motor.set_velocity(IntakeConstants.RETURN_SPEED, PERCENT)
-        self.lever_motor.spin_to_position(position_deg, DEGREES)
+    def move_elevator_to_position(self, position_deg):
+        self.elevator_motor_1.set_velocity(IntakeConstants.RETURN_SPEED, PERCENT)
+        self.elevator_motor_2.set_velocity(IntakeConstants.RETURN_SPEED, PERCENT)
+        self.elevator_motor_1.spin_to_position(position_deg, DEGREES)
+        self.elevator_motor_2.spin_to_position(position_deg, DEGREES)
 
-    def move_lever_down(self):
-        self.set_lever_speed(100)
-        self.set_lever_setpoint(0)
+    def move_elevator_down(self):
+        self.set_elevator_speed(100)
+        self.set_elevator_setpoint(0)
 
-    def set_lever_setpoint(self, setpoint):
-        self.lever_target = setpoint
+    def set_elevator_setpoint(self, setpoint):
+        self.elevator_target = setpoint
         self.time_updated_setpoint = time.time()
 
-    def set_lever_speed(self, speed):
-        self.lever_speed = speed
+    def set_elevator_speed(self, speed):
+        self.elevator_speed = speed
 
-    def run_floating_intake(self, speed = 1):
-        """Run the upper intake motor at a specified speed."""
-        self.floating_intake_motor.set(speed)
+    def run_intake(self, speed = 1):
+        """Run the intake motor at a specified speed."""
+        self.intake_motor.set(speed)
 
-    def stop_floating_intake(self):
-        """Stop the upper intake motor"""
-        self.floating_intake_motor.set(0)
-
-    def raise_intake(self):
-        """Raise the intake piston."""
-        self.raise_piston.set(True)
-
-    def lower_intake(self):
-        """Lower the intake piston."""
-        self.raise_piston.set(False)
-
-    def toggle_intake_piston(self):
-        """Toggle the intake piston."""
-        self.raise_piston.set(not self.raise_piston.value())
-
-    def extend_flap(self):
-        """Raise the intake piston."""
-        self.flap_piston.set(True)
-
-    def retract_flap(self):
-        """Lower the intake piston."""
-        self.flap_piston.set(False)
-
-    def toggle_flap_piston(self):
-        """Toggle the intake piston."""
-        self.raise_piston.set(not self.flap_piston.value())
+    def stop_intake(self):
+        """Stop the intake motor"""
+        self.intake_motor.set(0)
 
     def step_up(self):
-        self.set_lever_setpoint(self.lever_target + self.lever_step_amount)
-
-    def intake_until_color(self, color, timeout=3):
-        self.run_floating_intake(1)
-        start_time = time.time()
-        while (self.optical_sensor.color() != color) and (time.time() - start_time < timeout):
-            time.sleep_ms(5)
-        self.stop_floating_intake()
+        self.set_elevator_setpoint(self.elevator_target + self.elevator_step_amount)
 
     def lever_is_stalled(self):
         # Stall if torque is high and velocity is low
@@ -91,9 +59,9 @@ class Intake:
         velocity_threshold = 10  # Adjust as needed
 
         is_stalled = (
-             self.lever_motor.get() != 0 and
-             self.lever_motor.torque(TorqueUnits.NM) > torque_threshold and
-             abs(self.lever_motor.velocity(PERCENT)) < velocity_threshold
+                self.elevator_motor_1.get() != 0 and
+                self.elevator_motor_1.torque(TorqueUnits.NM) > torque_threshold and
+                abs(self.elevator_motor_1.velocity(PERCENT)) < velocity_threshold
          )
 
         current_time = time.time()
@@ -105,11 +73,11 @@ class Intake:
         return is_stalled and stalled_duration > 0.1
 
     def periodic(self):
-        error = self.lever_target - self.lever_motor.position(DEGREES)
-        if MathUtil.is_near(self.lever_target, self.lever_motor.position(DEGREES), 3):
-            self.set_lever_velocity(0)
+        error = self.elevator_target - ((self.elevator_motor_1.position(DEGREES) + self.elevator_motor_2.position(DEGREES)) / 2)
+        if MathUtil.is_near(self.elevator_target, ((self.elevator_motor_1.position(DEGREES) + self.elevator_motor_2.position(DEGREES)) / 2), 3):
+            self.set_elevator_velocity(0)
         else:
-            self.set_lever_velocity(MathUtil.clamp(self.lever_speed * error * 0.1, -self.lever_speed, self.lever_speed))
+            self.set_elevator_velocity(MathUtil.clamp(self.elevator_speed * error * 0.1, -self.elevator_speed, self.elevator_speed))
 
         # Check if we should return to lowered setpoint
         # If we are
