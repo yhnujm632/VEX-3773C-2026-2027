@@ -103,11 +103,9 @@ class Robot(RobotBase):
         self.calibrate_sensors()
 
         self.intake = Intake(
-            Motor(SmartPorts.LEVER_MOTOR, GearRatios.LEVER_MOTOR, True),
-            Motor(SmartPorts.FLOATING_INTAKE_MOTOR, GearRatios.FLOATING_INTAKE, False),
-            DigitalOut(ThreeWirePorts.HOOD_SOLENOID),
-            DigitalOut(ThreeWirePorts.RAISE_SOLENOID),
-            Optical(SmartPorts.OPTICAL_SENSOR)
+            Motor(SmartPorts.ELEVATOR_MOTOR_1, GearRatios.ELEVATOR_MOTOR_1, True),
+            Motor(SmartPorts.ELEVATOR_MOTOR_2, GearRatios.ELEVATOR_MOTOR_2, True),
+            Motor(SmartPorts.FLOATING_INTAKE_MOTOR, GearRatios.FLOATING_INTAKE_MOTOR, True)
         )
 
         self.descoring_arm = DescoringArm(
@@ -303,7 +301,6 @@ class Robot(RobotBase):
         self.drivetrain.left_drivetrain_PID.pid_gains = self.user_preferences.PIDF_GAINS_LEFT_DRIVER
         self.drivetrain.right_drivetrain_PID.pid_gains = self.user_preferences.PIDF_GAINS_RIGHT_DRIVER
         robot_log.trace("Driver control started")
-        self.intake.raise_intake()
         while not self.setup_complete and self.competition.is_driver_control():
             time.sleep_ms(20)
         self.brain.screen.clear_screen()
