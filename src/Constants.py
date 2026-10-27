@@ -63,6 +63,7 @@ class CompetitionSmartPorts:
     FLOATING_INTAKE_MOTOR = Ports.PORT2
     ELEVATOR_MOTOR_1 = Ports.PORT3
     ELEVATOR_MOTOR_2 = Ports.PORT3
+    CLAW_MOTOR = Ports.PORT3
 
     INERTIAL_SENSOR = Ports.PORT21
     # LEFT_DISTANCE = Ports.PORT0
@@ -79,11 +80,12 @@ class GearRatios:
     DRIVETRAIN = GearSetting.RATIO_6_1
     ELEVATOR_MOTOR_1 = GearSetting.RATIO_36_1
     ELEVATOR_MOTOR_2 = GearSetting.RATIO_36_1
-    FLOATING_INTAKE_MOTOR = GearSetting.RATIO_6_1
+    FLOATING_INTAKE_MOTOR = GearSetting.RATIO_36_1
+    CLAW_MOTOR = GearSetting.RATIO_36_1
 
 class IntakeConstants:
-    RETURN_SPEED = 25
-    SCORE_POSITION = 120
+    RETURN_SPEED = 100
+    SCORE_POSITION = 120 ##TODO Update
 
 
 class DrivetrainProperties:

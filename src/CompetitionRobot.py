@@ -4,7 +4,6 @@ from VEXLib.Geometry.Translation2d import Translation2d
 from VEXLib.Util.time import wait_until_not, time
 from VEXLib.Util.Logging import Logger, NoLogger
 from VEXLib.Util.Shelf import Shelf
-from DescoringArm import DescoringArm
 from Constants import *
 from Intake import Intake
 from Vision import Vision
@@ -103,14 +102,10 @@ class Robot(RobotBase):
         self.calibrate_sensors()
 
         self.intake = Intake(
-            Motor(SmartPorts.ELEVATOR_MOTOR_1, GearRatios.ELEVATOR_MOTOR_1, True),
+            Motor(SmartPorts.ELEVATOR_MOTOR_1, GearRatios.ELEVATOR_MOTOR_1, False),
             Motor(SmartPorts.ELEVATOR_MOTOR_2, GearRatios.ELEVATOR_MOTOR_2, True),
-            Motor(SmartPorts.FLOATING_INTAKE_MOTOR, GearRatios.FLOATING_INTAKE_MOTOR, True)
-        )
-
-        self.descoring_arm = DescoringArm(
-            DigitalOut(ThreeWirePorts.DESCORING_ARM_SOLENOID_OUT),
-            DigitalOut(ThreeWirePorts.DESCORING_ARM_SOLENOID_UP)
+            Motor(SmartPorts.FLOATING_INTAKE_MOTOR, GearRatios.FLOATING_INTAKE_MOTOR, True),
+            Motor(SmartPorts.CLAW_MOTOR, GearRatios.CLAW_MOTOR, True)
         )
 
         self.screen = ScrollingScreen(self.brain.screen, Buffer(20))
@@ -346,6 +341,7 @@ class Robot(RobotBase):
         if self.user_preferences.ENABLE_DRIVING:
             if self.user_preferences.USE_PIDF_CONTROL:
                 self.drivetrain.set_speed_zero_to_one(left_speed, right_speed)
+                # self.drivetrain.set_speed_zero_to_one(left_speed * self.intake.elevator_speed_multiplier, right_speed * self.intake.elevator_speed_multiplier)
                 self.drivetrain.update_powers()
             else:
                 self.drivetrain.set_powers(
@@ -376,6 +372,16 @@ class Robot(RobotBase):
         self.controller.buttonUp.pressed(self.intake.step_up())
         # self.controller.buttonDown.pressed(self.intake.step_down())
         self.controller.buttonDown.pressed(self.double_press_handler.press)
+
+        self.controller.buttonL2.pressed(self.intake.run_intake(1))
+        self.controller.buttonL2.released(self.intake.stop_intake())
+        self.controller.buttonL1.pressed(self.intake.run_intake(-1))
+        self.controller.buttonL1.released(self.intake.stop_intake())
+
+        self.controller.buttonB.pressed(self.intake.score())
+        self.controller.buttonA.pressed(self.intake.run_claw_motor(1))
+        self.controller.buttonA.released(self.intake.stop_claw_motor())
+
 
     @robot_log.logged
     def setup_debug_bindings(self):

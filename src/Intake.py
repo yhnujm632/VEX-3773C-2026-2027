@@ -6,15 +6,18 @@ from vex import DigitalOut, TorqueUnits, PERCENT, Color, Optical, Thread, FORWAR
 
 
 class Intake:
-    def __init__(self, elevator_motor_1: Motor, elevator_motor_2: Motor, intake_motor: Motor):
+    def __init__(self, elevator_motor_1: Motor, elevator_motor_2: Motor, intake_motor: Motor, claw_motor: Motor):
         self.elevator_motor_1 = elevator_motor_1
         self.elevator_motor_2 = elevator_motor_2
         self.intake_motor = intake_motor
+        self.claw_motor = claw_motor
         self.elevator_target = 0
         self.elevator_speed = 0
         self.time_updated_setpoint = 0
         self.elevator_step_amount = 20
+        self.elevator_upper_limit = 100 ##TODO Set
         self.set_elevator_velocity(0)
+        self.elevator_speed_multiplier = 1
 
     def set_elevator_velocity(self, velocity):
         self.elevator_motor_1.spin(FORWARD)
@@ -50,11 +53,25 @@ class Intake:
         """Stop the intake motor"""
         self.intake_motor.set(0)
 
+    def run_claw_motor(self, speed = 1):
+        """Run the claw motor at a specified speed."""
+        self.claw_motor.set(speed)
+
+    def stop_claw_motor(self):
+        """Stop the claw motor"""
+        self.claw_motor.set(0)
+
     def step_up(self):
-        self.set_elevator_setpoint(self.elevator_target + self.elevator_step_amount)
+        self.set_elevator_setpoint(MathUtil.clamp((self.elevator_target + self.elevator_step_amount), 0, self.elevator_upper_limit))
 
     def step_down(self):
-        self.set_elevator_setpoint(self.elevator_target - self.elevator_step_amount)
+        self.set_elevator_setpoint(MathUtil.clamp((self.elevator_target - self.elevator_step_amount), 0, self.elevator_upper_limit))
+
+    def score(self):
+        self.run_claw_motor(-1)
+        time.sleep(0.25)
+        self.step_up()
+        self.stop_claw_motor()
 
     def elevator_is_stalled(self):
         # Stall if torque is high and velocity is low
@@ -77,6 +94,7 @@ class Intake:
 
     def periodic(self):
         error = self.elevator_target - ((self.elevator_motor_1.position(DEGREES) + self.elevator_motor_2.position(DEGREES)) / 2)
+        self.elevator_speed_multiplier = 1 * ((self.elevator_motor_1.position(DEGREES) + self.elevator_motor_2.position(DEGREES)) / 2) / 360
         if MathUtil.is_near(self.elevator_target, ((self.elevator_motor_1.position(DEGREES) + self.elevator_motor_2.position(DEGREES)) / 2), 3):
             self.set_elevator_velocity(0)
         else:
