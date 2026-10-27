@@ -30,7 +30,7 @@ from TankDrivetrain import Drivetrain
 from VEXLib.Motor import Motor
 from VEXLib.Robot.RobotBase import RobotBase
 from VEXLib.Robot.ScrollingScreen import ScrollingScreen
-from VEXLib.Sensors.Controller import Controller
+from VEXLib.Sensors.Controller import Controller, DoublePressHandler
 from VEXLib.Util import time, pass_function
 from VEXLib.Util.Buffer import Buffer
 from AutonomousRoutines import Drive, all_routines
@@ -122,6 +122,10 @@ class Robot(RobotBase):
 
         self.available_autonomous_routines = all_routines
         self.selected_autonomous = Drive(self)
+
+        self.double_press_handler = DoublePressHandler(
+            self.intake.step_down(),
+            self.intake.move_elevator_down())
 
         self.brain.screen.pressed(self.flush_all_logs)
 
@@ -369,7 +373,9 @@ class Robot(RobotBase):
     @robot_log.logged
     def setup_default_bindings(self):
         robot_log.info("Setting up default controller bindings")
-
+        self.controller.buttonUp.pressed(self.intake.step_up())
+        # self.controller.buttonDown.pressed(self.intake.step_down())
+        self.controller.buttonDown.pressed(self.double_press_handler.press)
 
     @robot_log.logged
     def setup_debug_bindings(self):

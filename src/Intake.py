@@ -53,6 +53,9 @@ class Intake:
     def step_up(self):
         self.set_elevator_setpoint(self.elevator_target + self.elevator_step_amount)
 
+    def step_down(self):
+        self.set_elevator_setpoint(self.elevator_target - self.elevator_step_amount)
+
     def elevator_is_stalled(self):
         # Stall if torque is high and velocity is low
         torque_threshold = 1  # Adjust as needed

@@ -67,16 +67,11 @@ class CompetitionSmartPorts:
     INERTIAL_SENSOR = Ports.PORT21
     # LEFT_DISTANCE = Ports.PORT0
     # RIGHT_DISTANCE = Ports.PORT0
-    # VISION_SENSOR = Ports.PORT0
-
-    OPTICAL_SENSOR = Ports.PORT4
 
 class ThreeWirePorts:
     brain = Brain()
     RAISE_SOLENOID = brain.three_wire_port.g
     PISTON_ACTUATOR_SOLENOID = brain.three_wire_port.b
-    DESCORING_ARM_SOLENOID_UP = brain.three_wire_port.h
-    DESCORING_ARM_SOLENOID_OUT = brain.three_wire_port.a
     HOOD_SOLENOID = brain.three_wire_port.c
 
 
