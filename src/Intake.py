@@ -14,8 +14,8 @@ class Intake:
         self.elevator_target = 0
         self.elevator_speed = 0
         self.time_updated_setpoint = 0
-        self.elevator_step_amount = 20
-        self.elevator_upper_limit = 100 ##TODO Set
+        self.elevator_step_amount = 100
+        self.elevator_upper_limit = 1000000 ##TODO Set
         self.set_elevator_velocity(0)
         self.elevator_speed_multiplier = 1
 
@@ -34,7 +34,7 @@ class Intake:
         self.elevator_motor_1.spin_to_position(position_deg, DEGREES)
         self.elevator_motor_2.spin_to_position(position_deg, DEGREES)
 
-    def move_elevator_down(self):
+    def lower_elevator(self):
         self.set_elevator_speed(100)
         self.set_elevator_setpoint(0)
 
@@ -61,11 +61,17 @@ class Intake:
         """Stop the claw motor"""
         self.claw_motor.set(0)
 
-    def step_up(self):
-        self.set_elevator_setpoint(MathUtil.clamp((self.elevator_target + self.elevator_step_amount), 0, self.elevator_upper_limit))
 
-    def step_down(self):
-        self.set_elevator_setpoint(MathUtil.clamp((self.elevator_target - self.elevator_step_amount), 0, self.elevator_upper_limit))
+    def step_up(self, step_amount = 1):
+        self.set_elevator_speed(100)
+        self.set_elevator_setpoint(MathUtil.clamp((self.elevator_target + (self.elevator_step_amount * step_amount)), 0, self.elevator_upper_limit))
+
+    def step_down(self, step_amount = 1):
+        self.set_elevator_speed(100)
+        self.set_elevator_setpoint(MathUtil.clamp((self.elevator_target - (self.elevator_step_amount * step_amount)), 0, self.elevator_upper_limit))
+
+    def go_to_step(self, step_value):
+        self.set_elevator_setpoint(MathUtil.clamp((self.elevator_step_amount * step_value), 0, self.elevator_upper_limit))
 
     def score(self):
         self.run_claw_motor(-1)
@@ -95,7 +101,7 @@ class Intake:
     def periodic(self):
         error = self.elevator_target - ((self.elevator_motor_1.position(DEGREES) + self.elevator_motor_2.position(DEGREES)) / 2)
         self.elevator_speed_multiplier = 1 * ((self.elevator_motor_1.position(DEGREES) + self.elevator_motor_2.position(DEGREES)) / 2) / 360
-        if MathUtil.is_near(self.elevator_target, ((self.elevator_motor_1.position(DEGREES) + self.elevator_motor_2.position(DEGREES)) / 2), 3):
+        if MathUtil.is_near(self.elevator_target, ((self.elevator_motor_1.position(DEGREES) + self.elevator_motor_2.position(DEGREES)) / 2), 50):
             self.set_elevator_velocity(0)
         else:
             self.set_elevator_velocity(MathUtil.clamp(self.elevator_speed * error * 0.1, -self.elevator_speed, self.elevator_speed))

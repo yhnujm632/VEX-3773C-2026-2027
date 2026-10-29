@@ -102,8 +102,8 @@ class Robot(RobotBase):
         self.calibrate_sensors()
 
         self.intake = Intake(
-            Motor(SmartPorts.ELEVATOR_MOTOR_1, GearRatios.ELEVATOR_MOTOR_1, False),
-            Motor(SmartPorts.ELEVATOR_MOTOR_2, GearRatios.ELEVATOR_MOTOR_2, True),
+            Motor(SmartPorts.ELEVATOR_MOTOR_1, GearRatios.ELEVATOR_MOTOR_1, True),
+            Motor(SmartPorts.ELEVATOR_MOTOR_2, GearRatios.ELEVATOR_MOTOR_2, False),
             Motor(SmartPorts.FLOATING_INTAKE_MOTOR, GearRatios.FLOATING_INTAKE_MOTOR, True),
             Motor(SmartPorts.CLAW_MOTOR, GearRatios.CLAW_MOTOR, True)
         )
@@ -117,10 +117,6 @@ class Robot(RobotBase):
 
         self.available_autonomous_routines = all_routines
         self.selected_autonomous = Drive(self)
-
-        self.double_press_handler = DoublePressHandler(
-            self.intake.step_down(),
-            self.intake.move_elevator_down())
 
         self.brain.screen.pressed(self.flush_all_logs)
 
@@ -294,7 +290,6 @@ class Robot(RobotBase):
 
     @robot_log.logged
     def on_driver_control(self):
-        self.intake.stop_intake()
         self.selected_autonomous.cleanup()
         self.flush_all_logs("Flushing logs before driver control")
         self.drivetrain.left_drivetrain_PID.pid_gains = self.user_preferences.PIDF_GAINS_LEFT_DRIVER
@@ -349,6 +344,8 @@ class Robot(RobotBase):
                     right_speed * self.user_preferences.MOVE_SPEED,
                 )
 
+        self.intake.periodic()
+
         self.drivetrain.update_odometry()
         left_stick_x = self.controller.left_stick_x()
         left_stick_y = self.controller.left_stick_y()
@@ -369,18 +366,18 @@ class Robot(RobotBase):
     @robot_log.logged
     def setup_default_bindings(self):
         robot_log.info("Setting up default controller bindings")
-        self.controller.buttonUp.pressed(self.intake.step_up())
-        # self.controller.buttonDown.pressed(self.intake.step_down())
-        self.controller.buttonDown.pressed(self.double_press_handler.press)
+        # self.controller.buttonUp.pressed(lambda: (self.intake.step_up(1), self.intake.set_elevator_velocity(50)))
+        self.controller.buttonUp.pressed(lambda: (self.intake.step_up(1)))
+        # self.controller.buttonDown.pressed(lambda: (self.intake.step_down(1), self.intake.set_elevator_velocity(-50)))
+        self.controller.buttonDown.pressed(lambda: (self.intake.step_down(1)))
 
-        self.controller.buttonL2.pressed(self.intake.run_intake(1))
-        self.controller.buttonL2.released(self.intake.stop_intake())
-        self.controller.buttonL1.pressed(self.intake.run_intake(-1))
-        self.controller.buttonL1.released(self.intake.stop_intake())
+        self.controller.buttonB.pressed(self.intake.score)
 
-        self.controller.buttonB.pressed(self.intake.score())
-        self.controller.buttonA.pressed(self.intake.run_claw_motor(1))
-        self.controller.buttonA.released(self.intake.stop_claw_motor())
+        self.controller.buttonY.pressed(lambda: (self.intake.run_claw_motor()))
+        self.controller.buttonY.released(self.intake.stop_claw_motor)
+
+        self.controller.buttonX.pressed(lambda: (self.intake.run_claw_motor(-1)))
+        self.controller.buttonX.released(self.intake.stop_claw_motor)
 
 
     @robot_log.logged
