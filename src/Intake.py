@@ -2,7 +2,8 @@ from VEXLib.Math import MathUtil
 from VEXLib.Motor import Motor
 from VEXLib.Util import time
 from Constants import IntakeConstants
-from vex import DigitalOut, TorqueUnits, PERCENT, Color, Optical, Thread, FORWARD, HOLD, COAST, DEGREES, LedStateType
+from vex import DigitalOut, TorqueUnits, PERCENT, Color, Optical, Thread, FORWARD, HOLD, COAST, DEGREES, LedStateType, \
+    BrakeType
 
 
 class Intake:
@@ -14,16 +15,19 @@ class Intake:
         self.elevator_target = 0
         self.elevator_speed = 0
         self.time_updated_setpoint = 0
-        self.elevator_step_amount = 100
-        self.elevator_upper_limit = 1000000 ##TODO Set
+        self.elevator_step_amount = 666
+        self.elevator_upper_limit = 4000
         self.set_elevator_velocity(0)
         self.elevator_speed_multiplier = 1
+        self.claw_motor.set_stopping(BrakeType.HOLD)
+        self.elevator_motor_1.set_stopping(BrakeType.HOLD)
+        self.elevator_motor_2.set_stopping(BrakeType.HOLD)
 
     def set_elevator_velocity(self, velocity):
         self.elevator_motor_1.spin(FORWARD)
         self.elevator_motor_2.spin(FORWARD)
-        self.elevator_motor_1.set_velocity(velocity)
-        self.elevator_motor_2.set_velocity(velocity)
+        self.elevator_motor_1.set_velocity(velocity, PERCENT)
+        self.elevator_motor_2.set_velocity(velocity, PERCENT)
 
     def get_elevator_position(self):
         return (self.elevator_motor_1.position(DEGREES) + self.elevator_motor_2.position(DEGREES)) / 2
@@ -101,7 +105,7 @@ class Intake:
     def periodic(self):
         error = self.elevator_target - ((self.elevator_motor_1.position(DEGREES) + self.elevator_motor_2.position(DEGREES)) / 2)
         self.elevator_speed_multiplier = 1 * ((self.elevator_motor_1.position(DEGREES) + self.elevator_motor_2.position(DEGREES)) / 2) / 360
-        if MathUtil.is_near(self.elevator_target, ((self.elevator_motor_1.position(DEGREES) + self.elevator_motor_2.position(DEGREES)) / 2), 50):
+        if MathUtil.is_near(self.elevator_target, ((self.elevator_motor_1.position(DEGREES) + self.elevator_motor_2.position(DEGREES)) / 2), 70):
             self.set_elevator_velocity(0)
         else:
             self.set_elevator_velocity(MathUtil.clamp(self.elevator_speed * error * 0.1, -self.elevator_speed, self.elevator_speed))

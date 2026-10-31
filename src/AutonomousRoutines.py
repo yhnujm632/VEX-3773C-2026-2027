@@ -89,8 +89,38 @@ class LeftAllianceGoal(AutonomousRoutine):
         return Rotation2d.from_degrees(0)
 
     def execute(self):
-        self.robot.drivetrain.move_distance_towards_direction_trap(Translation1d.from_centimeters(58), 0, commands=[self.robot.intake.go_to_step(2), -0.2])
+        self.robot.drivetrain.move_distance_towards_direction_trap(Translation1d.from_centimeters(58), 0,
+                                                                   commands=[TimeBasedCommand(0.2, lambda:self.robot.intake.go_to_step(2))])
         self.robot.drivetrain.move_distance_towards_direction_trap(Translation1d.from_centimeters(70), 90)
+        self.robot.intake.score()
+        self.robot.drivetrain.move_distance_towards_direction_trap(Translation1d.from_centimeters(-10), 90)
+        self.robot.intake.lower_elevator()
+
+
+class Left2AllianceGoal(AutonomousRoutine):
+    name = "Left 2 Alliance Goal"
+    def __init__(self, robot: Robot):
+        super().__init__(robot)
+
+    @staticmethod
+    def startup_angle():
+        return Rotation2d.from_degrees(0)
+
+    def execute(self):
+        self.robot.drivetrain.move_distance_towards_direction_trap(Translation1d.from_centimeters(58), 0)
+        self.robot.drivetrain.move_distance_towards_direction_trap(Translation1d.from_centimeters(70), 90,
+                                                                   commands=[TimeBasedCommand(0.2, lambda:self.robot.intake.go_to_step(2))])
+        self.robot.intake.score()
+        self.robot.drivetrain.move_distance_towards_direction_trap(Translation1d.from_centimeters(-10), 90)
+        self.robot.intake.lower_elevator()
+        self.robot.drivetrain.move_distance_towards_direction_trap(Translation1d.from_centimeters(-60), 90)
+        self.robot.drivetrain.move_distance_towards_direction_trap(Translation1d.from_centimeters(60), 180)
+        self.robot.intake.run_claw_motor(1)
+        time.sleep(0.5)
+        self.robot.intake.stop_claw_motor()
+        self.robot.drivetrain.move_distance_towards_direction_trap(Translation1d.from_centimeters(-60), 180)
+        self.robot.drivetrain.move_distance_towards_direction_trap(Translation1d.from_centimeters(70), 90,
+                                                                   commands=[TimeBasedCommand(0.2, lambda:self.robot.intake.go_to_step(2))])
         self.robot.intake.score()
         self.robot.drivetrain.move_distance_towards_direction_trap(Translation1d.from_centimeters(-10), 90)
         self.robot.intake.lower_elevator()
@@ -106,8 +136,39 @@ class RightAllianceGoal(AutonomousRoutine):
         return Rotation2d.from_degrees(0)
 
     def execute(self):
-        self.robot.drivetrain.move_distance_towards_direction_trap(Translation1d.from_centimeters(58), 0, commands=[self.robot.intake.go_to_step(2), -0.2])
+        self.robot.drivetrain.move_distance_towards_direction_trap(Translation1d.from_centimeters(58), 0,
+                                                                   commands=[TimeBasedCommand(0.2, lambda:self.robot.intake.go_to_step(2))])
         self.robot.drivetrain.move_distance_towards_direction_trap(Translation1d.from_centimeters(70), -90)
+        self.robot.intake.score()
+        self.robot.drivetrain.move_distance_towards_direction_trap(Translation1d.from_centimeters(-10), -90)
+        self.robot.intake.lower_elevator()
+
+
+class Right2AllianceGoal(AutonomousRoutine):
+    name = "Right 2 Alliance Goal"
+
+    def __init__(self, robot: Robot):
+        super().__init__(robot)
+
+    @staticmethod
+    def startup_angle():
+        return Rotation2d.from_degrees(0)
+
+    def execute(self):
+        self.robot.drivetrain.move_distance_towards_direction_trap(Translation1d.from_centimeters(58), 0)
+        self.robot.drivetrain.move_distance_towards_direction_trap(Translation1d.from_centimeters(70), -90,
+                                                                   commands=[TimeBasedCommand(0.2, lambda:self.robot.intake.go_to_step(2))])
+        self.robot.intake.score()
+        self.robot.drivetrain.move_distance_towards_direction_trap(Translation1d.from_centimeters(-10), -90)
+        self.robot.intake.lower_elevator()
+        self.robot.drivetrain.move_distance_towards_direction_trap(Translation1d.from_centimeters(-60), -90)
+        self.robot.drivetrain.move_distance_towards_direction_trap(Translation1d.from_centimeters(60), 180)
+        self.robot.intake.run_claw_motor(1)
+        time.sleep(0.5)
+        self.robot.intake.stop_claw_motor()
+        self.robot.drivetrain.move_distance_towards_direction_trap(Translation1d.from_centimeters(-60), 180)
+        self.robot.drivetrain.move_distance_towards_direction_trap(Translation1d.from_centimeters(70), -90,
+                                                                   commands=[TimeBasedCommand(0.2, lambda:self.robot.intake.go_to_step(2))])
         self.robot.intake.score()
         self.robot.drivetrain.move_distance_towards_direction_trap(Translation1d.from_centimeters(-10), -90)
         self.robot.intake.lower_elevator()
@@ -129,6 +190,4 @@ class Square(AutonomousRoutine):
         self.robot.drivetrain.move_distance_towards_direction_trap(Translation1d.from_inches(24), 90)
 
 
-
-
-all_routines = [LeftAllianceGoal, RightAllianceGoal, Drive]
+all_routines = [LeftAllianceGoal, RightAllianceGoal, Left2AllianceGoal, Right2AllianceGoal, Drive]

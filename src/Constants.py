@@ -78,10 +78,10 @@ class ThreeWirePorts:
 
 class GearRatios:
     DRIVETRAIN = GearSetting.RATIO_6_1
-    ELEVATOR_MOTOR_1 = GearSetting.RATIO_36_1
-    ELEVATOR_MOTOR_2 = GearSetting.RATIO_36_1
-    FLOATING_INTAKE_MOTOR = GearSetting.RATIO_36_1
-    CLAW_MOTOR = GearSetting.RATIO_36_1
+    ELEVATOR_MOTOR_1 = GearSetting.RATIO_18_1
+    ELEVATOR_MOTOR_2 = GearSetting.RATIO_18_1
+    FLOATING_INTAKE_MOTOR = GearSetting.RATIO_18_1
+    CLAW_MOTOR = GearSetting.RATIO_18_1
 
 class IntakeConstants:
     RETURN_SPEED = 100

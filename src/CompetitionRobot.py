@@ -371,13 +371,15 @@ class Robot(RobotBase):
         # self.controller.buttonDown.pressed(lambda: (self.intake.step_down(1), self.intake.set_elevator_velocity(-50)))
         self.controller.buttonDown.pressed(lambda: (self.intake.step_down(1)))
 
+        self.controller.buttonLeft.pressed(lambda: (self.intake.lower_elevator()))
+
         self.controller.buttonB.pressed(self.intake.score)
 
-        self.controller.buttonY.pressed(lambda: (self.intake.run_claw_motor()))
-        self.controller.buttonY.released(self.intake.stop_claw_motor)
+        self.controller.buttonR2.pressed(lambda: (self.intake.run_claw_motor(1)))
+        self.controller.buttonR2.released(self.intake.stop_claw_motor)
 
-        self.controller.buttonX.pressed(lambda: (self.intake.run_claw_motor(-1)))
-        self.controller.buttonX.released(self.intake.stop_claw_motor)
+        self.controller.buttonR1.pressed(lambda: (self.intake.run_claw_motor(-1)))
+        self.controller.buttonR1.released(self.intake.stop_claw_motor)
 
 
     @robot_log.logged
