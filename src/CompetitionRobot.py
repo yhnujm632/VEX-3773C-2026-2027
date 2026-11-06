@@ -4,7 +4,6 @@ from VEXLib.Geometry.Translation2d import Translation2d
 from VEXLib.Util.time import wait_until_not, time
 from VEXLib.Util.Logging import Logger, NoLogger
 from VEXLib.Util.Shelf import Shelf
-from DescoringArm import DescoringArm
 from Constants import *
 from Intake import Intake
 from Vision import Vision
@@ -104,13 +103,9 @@ class Robot(RobotBase):
 
         self.intake = Intake(
             Motor(SmartPorts.ELEVATOR_MOTOR_1, GearRatios.ELEVATOR_MOTOR_1, True),
-            Motor(SmartPorts.ELEVATOR_MOTOR_2, GearRatios.ELEVATOR_MOTOR_2, True),
-            Motor(SmartPorts.FLOATING_INTAKE_MOTOR, GearRatios.FLOATING_INTAKE_MOTOR, True)
-        )
-
-        self.descoring_arm = DescoringArm(
-            DigitalOut(ThreeWirePorts.DESCORING_ARM_SOLENOID_OUT),
-            DigitalOut(ThreeWirePorts.DESCORING_ARM_SOLENOID_UP)
+            Motor(SmartPorts.ELEVATOR_MOTOR_2, GearRatios.ELEVATOR_MOTOR_2, False),
+            Motor(SmartPorts.FLOATING_INTAKE_MOTOR, GearRatios.FLOATING_INTAKE_MOTOR, True),
+            Motor(SmartPorts.CLAW_MOTOR, GearRatios.CLAW_MOTOR, True)
         )
 
         self.screen = ScrollingScreen(self.brain.screen, Buffer(20))
@@ -122,10 +117,6 @@ class Robot(RobotBase):
 
         self.available_autonomous_routines = all_routines
         self.selected_autonomous = Drive(self)
-
-        self.double_press_handler = DoublePressHandler(
-            self.intake.step_down(),
-            self.intake.move_elevator_down())
 
         self.brain.screen.pressed(self.flush_all_logs)
 
@@ -299,7 +290,6 @@ class Robot(RobotBase):
 
     @robot_log.logged
     def on_driver_control(self):
-        self.intake.stop_intake()
         self.selected_autonomous.cleanup()
         self.flush_all_logs("Flushing logs before driver control")
         self.drivetrain.left_drivetrain_PID.pid_gains = self.user_preferences.PIDF_GAINS_LEFT_DRIVER
@@ -346,12 +336,15 @@ class Robot(RobotBase):
         if self.user_preferences.ENABLE_DRIVING:
             if self.user_preferences.USE_PIDF_CONTROL:
                 self.drivetrain.set_speed_zero_to_one(left_speed, right_speed)
+                # self.drivetrain.set_speed_zero_to_one(left_speed * self.intake.elevator_speed_multiplier, right_speed * self.intake.elevator_speed_multiplier)
                 self.drivetrain.update_powers()
             else:
                 self.drivetrain.set_powers(
                     left_speed * self.user_preferences.MOVE_SPEED,
                     right_speed * self.user_preferences.MOVE_SPEED,
                 )
+
+        self.intake.periodic()
 
         self.drivetrain.update_odometry()
         left_stick_x = self.controller.left_stick_x()
@@ -373,9 +366,21 @@ class Robot(RobotBase):
     @robot_log.logged
     def setup_default_bindings(self):
         robot_log.info("Setting up default controller bindings")
-        self.controller.buttonUp.pressed(self.intake.step_up())
-        # self.controller.buttonDown.pressed(self.intake.step_down())
-        self.controller.buttonDown.pressed(self.double_press_handler.press)
+        # self.controller.buttonUp.pressed(lambda: (self.intake.step_up(1), self.intake.set_elevator_velocity(50)))
+        self.controller.buttonUp.pressed(lambda: (self.intake.step_up(1)))
+        # self.controller.buttonDown.pressed(lambda: (self.intake.step_down(1), self.intake.set_elevator_velocity(-50)))
+        self.controller.buttonDown.pressed(lambda: (self.intake.step_down(1)))
+
+        self.controller.buttonLeft.pressed(lambda: (self.intake.lower_elevator()))
+
+        self.controller.buttonB.pressed(self.intake.score)
+
+        self.controller.buttonR2.pressed(lambda: (self.intake.run_claw_motor(1)))
+        self.controller.buttonR2.released(self.intake.stop_claw_motor)
+
+        self.controller.buttonR1.pressed(lambda: (self.intake.run_claw_motor(-1)))
+        self.controller.buttonR1.released(self.intake.stop_claw_motor)
+
 
     @robot_log.logged
     def setup_debug_bindings(self):

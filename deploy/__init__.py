@@ -201,6 +201,8 @@ def main():
                         "[bold yellow]Failed to unmount drive, retrying...[/bold yellow]"
                     )
                     continue
+            verbose_print("Syncing FS blocks")
+            os.system("sync")
             verbose_print("[green]Unmounted drive successfully[/green]")
 
         console.print(
