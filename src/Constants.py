@@ -104,6 +104,8 @@ class DrivetrainProperties:
     WHEEL_DIAMETER = Distance.from_inches(3.233)
     WHEEL_CIRCUMFERENCE = circle_circumference(WHEEL_DIAMETER / 2)
     TRACK_WIDTH = Distance.from_inches(11.4)
+    ROBOT_WIDTH = Distance.from_inches(13.5)
+    ROBOT_LENGTH = Distance.from_inches(16)
 
     LONG_GOAL_COLOR_DESC = Colordesc(1, 129, 66, 35, 12, 0.2)
 
