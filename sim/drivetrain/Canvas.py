@@ -1,6 +1,6 @@
 import turtle
 import _tkinter
-from math import sin, cos
+from math import sin, cos, pi
 import time
 import pathlib
 
@@ -12,7 +12,6 @@ from VEXLib.Geometry.Pose2d import Pose2d
 import src.Constants as Constants
 
 ROBOT_MAP = pathlib.Path(__file__).parent.parent.parent / "assets" / "robot_map.png"
-
 
 class Canvas:
     def __init__(self):
@@ -39,36 +38,47 @@ class Canvas:
         self.player.penup()
 
         x_position, y_position, rotation = pose.translation.x_component.to_centimeters(), pose.translation.y_component.to_centimeters(), pose.rotation.to_radians()
-        width, length = Constants.DrivetrainProperties.ROBOT_WIDTH, Constants.DrivetrainProperties.ROBOT_LENGTH
+        width, length = Constants.DrivetrainProperties.ROBOT_WIDTH.to_centimeters(), Constants.DrivetrainProperties.ROBOT_LENGTH.to_centimeters()
+
+        robot_bounds = {
+            "left_width": (width * sin(-rotation) / 2, width * cos(rotation) / 2),
+            "right_width": (width * sin(-rotation + pi) / 2, width * cos(rotation + pi) / 2),
+            "top_height": (length * cos(-rotation) / 2, length * sin(rotation) / 2),
+            "bottom_height": (length * cos(-rotation + pi) / 2, length * sin(rotation + pi) / 2),
+        }
 
         robot_corners = [
-            (x_position - (cos(rotation) * (length / 2)), y_position - (sin(rotation) * (width / 2))),
-        ## left off here - UNFINISHED
-
+            (robot_bounds["right_width"][0] + robot_bounds["bottom_height"][0], robot_bounds["right_width"][1] + robot_bounds["bottom_height"][1]),
+            (robot_bounds["left_width"][0] + robot_bounds["bottom_height"][0], robot_bounds["left_width"][1] + robot_bounds["bottom_height"][1]),
+            (robot_bounds["left_width"][0] + robot_bounds["top_height"][0], robot_bounds["left_width"][1] + robot_bounds["top_height"][1]),
+            (robot_bounds["right_width"][0] + robot_bounds["top_height"][0], robot_bounds["right_width"][1] + robot_bounds["top_height"][1]),
         ]
 
-
-
-        self.player.goto(x_position, y_position)
+        self.player.goto(robot_corners[0])
         self.player.setheading(rotation)
 
         self.player.pendown()
         self.player.begin_fill()
 
-        x = 1
-        while x in range(1, 5):
-            self.player.goto(x_position, y_position)
+        x = 0
+        while x in range(0, len(robot_corners)):
+            self.player.goto(robot_corners[x])
             x += 1
 
         self.player.end_fill()
 
-
-        # test
         self.player.penup()
+        self.player.color("#000")
         self.player.goto(x_position, y_position)
         self.player.pendown()
-        self.player.dot(20, "#000")
-        self.player.penup()
+        self.player.begin_fill()
+
+        x = 0
+        while x in range(0, 2):
+            self.player.goto(robot_corners[x])
+            x += 1
+
+        self.player.end_fill()
 
         self.update_screen()
 
@@ -83,4 +93,5 @@ while r in range(0, 600):
     h.draw_robot(Pose2d(Translation2d(Translation1d.from_centimeters(0), Translation1d.from_centimeters(0)), Rotation2d.from_degrees(r)))
     r += 1
     time.sleep(0.01)
+#h.draw_robot(Pose2d(Translation2d(Translation1d.from_centimeters(0), Translation1d.from_centimeters(0)), Rotation2d.from_degrees(r)))
 g = input("sdfdf")
